@@ -18,9 +18,8 @@ export function MapShell() {
       <MapView filters={filters} focusedSuggestion={focusedSuggestion} selectedPermitId={selectedPermit?.id ?? null} onSelectPermit={setSelectedPermit} />
       <FilterPanel filters={filters} onChange={setFilters} onSelectAddress={setFocusedSuggestion} />
       {selectedPermit && <SubmissionPanel permit={selectedPermit} onClose={() => { setSelectedPermit(null); setFocusedSuggestion(null); }} />}
-      <a className="map-admin-link" href="/admin">Admin</a>
       {aboutOpen && <AboutModal onClose={() => setAboutOpen(false)} />}
     </section>
-    <footer className="footer">Data: NYC Department of Buildings via <a href="https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a">NYC Open Data</a>. Permit status may change before demolition; data updates monthly.</footer>
+    <footer className="footer"><span>Data: NYC Department of Buildings via <a href="https://data.cityofnewyork.us/Housing-Development/DOB-Permit-Issuance/ipu4-2q9a">NYC Open Data</a>. Permit status may change before demolition; data updates monthly.</span><a className="footer-admin-link" href="/admin">Admin</a></footer>
   </main>;
 }

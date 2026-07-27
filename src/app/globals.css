@@ -12,7 +12,7 @@ a { color: inherit; }
 .shell { height: 100dvh; min-height: 35rem; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; }
 .topbar, .footer { padding: .8rem clamp(1rem, 4vw, 3rem); border-color: var(--line); border-style: solid; }
 .topbar { border-width: 0 0 1px; display: flex; justify-content: space-between; align-items: center; }
-.footer { border-width: 1px 0 0; font-size: .78rem; color: #4b554e; }
+.footer { border-width: 1px 0 0; display: flex; justify-content: space-between; gap: 1rem; font-size: .78rem; color: #4b554e; }
 .map-stage { min-height: 0; position: relative; overflow: hidden; }
 .map-canvas { height: 100%; width: 100%; }
 .panel { background: rgba(255,255,255,.96); border: 1px solid var(--line); border-radius: .6rem; padding: 1rem; box-shadow: 0 8px 24px rgba(25,34,30,.12); }
@@ -35,7 +35,7 @@ legend { padding: 0; font-size: .9rem; font-weight: 700; }
 .map-message { margin: 1rem; }
 .map-loading, .map-count, .map-notice { position: absolute; z-index: 1; right: 1rem; padding: .35rem .55rem; margin: 0; background: rgba(255,255,255,.9); border: 1px solid var(--line); border-radius: .35rem; font-size: .75rem; }
 .map-loading { top: 1rem; }.map-notice { top: 3.25rem; }.map-count { right: 1rem; bottom: 2.25rem; }
-.map-admin-link { position: absolute; z-index: 2; right: 1rem; bottom: 4.35rem; padding: .2rem .35rem; background: rgba(255,255,255,.9); border: 1px solid var(--line); font-size: .7rem; }
+.footer-admin-link { flex: 0 0 auto; align-self: end; }
 .cluster-count { width: 2rem; height: 2rem; padding: 0; color: #000; background: transparent; border: 0; font-size: .72rem; font-weight: 700; text-align: center; transform: translateY(-50%); }
 .muted, .hint, .range-bounds, small { color: #333; }.panel, .map-loading, .map-count, .submission-panel input, .submission-panel textarea, .search-label input, .segmented-control button, .review-actions button { background: #fff; color: #000; }.segmented-control button.active, .submission-panel button[type='submit'], .review-actions button:first-child, .review-actions .danger { background: #000; border-color: #000; color: #fff; }.building-image figcaption { background: #fff; border: 1px solid #000; }.archive-link { font-weight: 700; }.filter-panel, .submission-panel, .review-card { box-shadow: none; }
 .submission-panel { position: absolute; z-index: 3; top: 1rem; right: 1rem; bottom: 1rem; width: min(25rem, calc(100% - 2rem)); overflow: auto; }
