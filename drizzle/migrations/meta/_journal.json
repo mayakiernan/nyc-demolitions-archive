@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1785161565818,
+      "tag": "0000_thick_shotgun",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1785165421790,
+      "tag": "0001_freezing_harry_osborn",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1785173399000,
+      "tag": "0002_complete_demolition_permits",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1785174277000,
+      "tag": "0003_repair_complete_permit_migration",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1785176000000,
+      "tag": "0004_permit_contact_details",
+      "breakpoints": true
+    }
+  ]
+}
