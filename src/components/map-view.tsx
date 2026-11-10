@@ -85,12 +85,21 @@ export function MapView({ filters, focusedSuggestion, selectedPermitId, onSelect
   useEffect(() => { if (!mapReady) return; const source = mapRef.current?.getSource(sourceId) as GeoJSONSource | undefined; source?.setData(permitGeoJson(permits)); }, [mapReady, permits]);
   useEffect(() => { const map = mapRef.current; if (!mapReady || !map?.getLayer('demolition-points')) return; const directSearchId = geocodedFocus?.permitId ?? ''; map.setFilter('demolition-points', ['all', ['!', ['has', 'point_count']], ['!=', ['get', 'id'], directSearchId]]); map.setPaintProperty('demolition-points', 'circle-color', ['case', ['==', ['get', 'id'], selectedPermitId ?? ''], '#d40000', '#000']); map.setPaintProperty('demolition-points', 'circle-radius', ['case', ['==', ['get', 'id'], selectedPermitId ?? ''], 9, 6]); }, [mapReady, selectedPermitId, geocodedFocus]);
   useEffect(() => { const source = mapRef.current?.getSource(selectedLocationSourceId) as GeoJSONSource | undefined; source?.setData(selectedLocationGeoJson(geocodedFocus)); }, [mapReady, geocodedFocus]);
+  // Property details and archive photos must not depend on basemap availability.
+  useEffect(() => {
+    if (!focusedSuggestion) return;
+    const controller = new AbortController();
+    fetch(`/api/buildings/${encodeURIComponent(focusedSuggestion.id)}`, { signal: controller.signal })
+      .then(response => response.ok ? response.json() : null)
+      .then(body => { if (!controller.signal.aborted && body?.data) onSelectPermit(body.data as PermitMarker); })
+      .catch(() => {});
+    return () => controller.abort();
+  }, [focusedSuggestion, onSelectPermit]);
   useEffect(() => {
     if (!focusedSuggestion) { setGeocodedFocus(null); setGeocodeNotice(null); return; }
     if (!mapReady || !mapRef.current) return;
     const controller = new AbortController();
     setGeocodedFocus(null); setGeocodeNotice('Finding the listed address…');
-    fetch(`/api/buildings/${encodeURIComponent(focusedSuggestion.id)}`, { signal: controller.signal }).then((response) => response.ok ? response.json() : null).then((body) => { if (!controller.signal.aborted && body?.data) onSelectPermit(body.data as PermitMarker); }).catch(() => {});
     fetch(`/api/geocode?address=${encodeURIComponent(focusedSuggestion.label)}`, { signal: controller.signal }).then((response) => response.ok ? response.json() : null).then((body) => {
       if (controller.signal.aborted) return;
       const location = body?.data as GeocodedLocation | null;
@@ -101,7 +110,7 @@ export function MapView({ filters, focusedSuggestion, selectedPermitId, onSelect
     return () => controller.abort();
   }, [focusedSuggestion, mapReady, onSelectPermit]);
 
-  if (ready === false) return <div className="map-message panel">Local basemap not found. Follow <code>public/maps/README.md</code> to build <code>nyc.pmtiles</code>, then refresh.</div>;
+  if (ready === false) return <div className="map-message panel">Map unavailable. Use Address search to select a property and view its archive photograph.</div>;
   if (ready === null) return <div className="map-message panel">Checking local basemap…</div>;
   return <><div ref={container} className="map-canvas" aria-label="NYC demolition map" />{loading && <p className="map-loading">Updating permits…</p>}{geocodeNotice && <p className="map-notice">{geocodeNotice}</p>}<p className="map-count">{locationCount.toLocaleString()} locations · {permits.length.toLocaleString()} permits</p></>;
 }

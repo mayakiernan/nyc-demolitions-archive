@@ -43,3 +43,23 @@ test('skips an incorrect first result and chooses the oldest confirmed photo', a
     assert.equal((await findArchivePhoto(property))?.sourcePageUrl, `https://nycrecords.access.preservica.com/uncategorized/${ids[2]}/`);
   } finally { globalThis.fetch = original; }
 });
+
+test('tries address search when parcel results exist but depict another address', async () => {
+  const original = globalThis.fetch;
+  const second = 'IO_4872e6f2-625f-4c2a-b7ff-08c4de5c8f3c';
+  let addressSearched = false;
+  const link = (value: string) => `<h5><a href="https://nycrecords.access.preservica.com/uncategorized/${value}/">Photo</a></h5>`;
+  globalThis.fetch = async input => {
+    const url = new URL(String(input));
+    if (url.searchParams.has('s')) {
+      const parcelSearch = url.searchParams.get('s')!.startsWith('nynyma_');
+      if (!parcelSearch) addressSearched = true;
+      return new Response(link(parcelSearch ? id : second));
+    }
+    return new Response(url.pathname.includes(id) ? record.replace('404 West', '405 West') : record);
+  };
+  try {
+    assert.equal((await findArchivePhoto(property))?.sourcePageUrl, `https://nycrecords.access.preservica.com/uncategorized/${second}/`);
+    assert.equal(addressSearched, true);
+  } finally { globalThis.fetch = original; }
+});

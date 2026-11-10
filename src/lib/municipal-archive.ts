@@ -54,9 +54,17 @@ export async function findArchivePhoto(property: Property): Promise<ArchivePhoto
   if (!borough || !property.block || !property.lot || !property.houseNumber || !property.streetName) return null;
   const identifier = `nynyma_rec0040_${borough}_${String(property.block).padStart(5, '0')}_${String(property.lot).padStart(4, '0')}`;
   const url = `${origin}/?${new URLSearchParams({ s: identifier, parenthierarchy: collection })}`;
-  let ids = archiveRecordIds(await archiveHtml(url));
-  if (!ids.length) ids = archiveRecordIds(await archiveHtml(archiveSearchUrl(property)));
-  const results = await Promise.all(ids.slice(0, 24).map(async id => matchArchiveRecord(await archiveHtml(`${origin}/uncategorized/${id}/`), id, property)));
-  return results.filter((photo): photo is ArchivePhoto => photo !== null)
-    .sort((a, b) => a.date.localeCompare(b.date) || a.identifier.localeCompare(b.identifier))[0] ?? null;
+  const inspected = new Set<string>();
+  async function confirmedPhotos(searchUrl: string) {
+    const ids = archiveRecordIds(await archiveHtml(searchUrl)).filter(id => !inspected.has(id)).slice(0, 24);
+    ids.forEach(id => inspected.add(id));
+    const results = await Promise.all(ids.map(async id => matchArchiveRecord(await archiveHtml(`${origin}/uncategorized/${id}/`), id, property)));
+    return results.filter((photo): photo is ArchivePhoto => photo !== null)
+      .sort((a, b) => a.date.localeCompare(b.date) || a.identifier.localeCompare(b.identifier));
+  }
+  const parcelMatches = await confirmedPhotos(url);
+  if (parcelMatches.length) return parcelMatches[0];
+  // A parcel search may return records for a different street frontage. Still
+  // try the address search when those results fail validation.
+  return (await confirmedPhotos(archiveSearchUrl(property)))[0] ?? null;
 }
